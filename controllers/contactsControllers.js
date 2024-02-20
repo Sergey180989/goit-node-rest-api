@@ -60,6 +60,7 @@ export const createContact = async (req, res, next) => {
 
 export const updateContact = async (req, res, next) => {
   try {
+    const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw HttpError(400, "Invalid contact ID");
     }
@@ -67,7 +68,7 @@ export const updateContact = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const { id } = req.params;
+    
     const updatedContact = await Contacts.findByIdAndUpdate(id, req.body, {
       new: true,
     });
