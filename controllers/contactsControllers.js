@@ -67,8 +67,7 @@ export const updateContact = async (req, res, next) => {
     const { error } = updateContactSchema.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);
-    }
-    
+    }    
     const updatedContact = await Contacts.findByIdAndUpdate(id, req.body, {
       new: true,
     });
