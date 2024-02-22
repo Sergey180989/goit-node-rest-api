@@ -6,6 +6,20 @@ import {
   updateFavoriteSchema,
 } from "../schemas/contactsSchemas.js";
 
+export const createContact = async (req, res, next) => {
+  try {
+    const { error } = createContactSchema.validate(req.body);
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    const { _id: owner } = req.user;
+    const newContact = await Contacts.create({ ...req.body, owner });
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllContacts = async (req, res, next) => {
   try {
     const { _id: owner } = req.user;
@@ -33,38 +47,6 @@ export const getOneContact = async (req, res, next) => {
     }
 
     res.status(200).json(contact);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const deleteContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { _id: owner } = req.user;
-    const deletedContact = await Contacts.findByIdAndDelete(id)
-      .where("owner")
-      .equals(owner);
-
-    if (!deletedContact) {
-      throw HttpError(404, "Not found");
-    }
-
-    res.status(200).json(deletedContact);
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const createContact = async (req, res, next) => {
-  try {
-    const { error } = createContactSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
-    }
-    const { _id: owner } = req.user;
-    const newContact = await Contacts.create({ ...req.body, owner });
-    res.status(201).json(newContact);
   } catch (error) {
     next(error);
   }
@@ -126,3 +108,22 @@ export const updateFavorite = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteContact = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { _id: owner } = req.user;
+    const deletedContact = await Contacts.findByIdAndDelete(id)
+      .where("owner")
+      .equals(owner);
+
+    if (!deletedContact) {
+      throw HttpError(404, "Not found");
+    }
+
+    res.status(200).json(deletedContact);
+  } catch (error) {
+    next(error);
+  }
+};
+
