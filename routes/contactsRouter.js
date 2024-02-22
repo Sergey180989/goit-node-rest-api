@@ -8,19 +8,20 @@ import {
   updateFavorite,
 } from "../controllers/contactsControllers.js";
 import { ValidId } from "../helpers/ValidId.js";
+import { authenticate } from "../auth/authenticate.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", authenticate, getAllContacts);
 
-contactsRouter.get("/:id", ValidId, getOneContact);
+contactsRouter.get("/:id", authenticate, ValidId, getOneContact);
 
-contactsRouter.delete("/:id", ValidId, deleteContact);
+contactsRouter.delete("/:id", authenticate, ValidId, deleteContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.post("/", authenticate, createContact);
 
-contactsRouter.put("/:id", ValidId, updateContact);
+contactsRouter.put("/:id", authenticate, ValidId, updateContact);
 
-contactsRouter.patch("/:id/favorite", ValidId, updateFavorite);
+contactsRouter.patch("/:id/favorite", authenticate, ValidId, updateFavorite);
 
 export default contactsRouter;
