@@ -18,7 +18,7 @@ usersRouter.get("/current", authenticate, getCurrent);
 usersRouter.post("/logout", authenticate, logout);
 usersRouter.patch("/users", authenticate, updateUserSubscription);
 usersRouter.patch(
-  "/avatar",
+  "/avatars",
   authenticate,
   upload.single("avatar"),
   updateAvatar

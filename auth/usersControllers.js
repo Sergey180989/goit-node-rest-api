@@ -10,7 +10,6 @@ import { User } from "../auth/users.js";
 import { registerSchema, loginSchema } from "../auth/users.js";
 import HttpError from "../helpers/HttpError.js";
 
-
 const avatarDir = path.resolve("public", "avatars");
 dotenv.config();
 const { SECRET_KEY } = process.env;
@@ -25,10 +24,14 @@ export const register = async (req, res, next) => {
     const user = await User.findOne({ email });
     if (user) {
       throw HttpError(409, "Email in use");
-    }
+    }    
     const avatarURL = gravatar.url(email);
     const hasPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ ...req.body, password: hasPassword });
+    const newUser = await User.create({
+      ...req.body,
+      password: hasPassword,
+      avatarURL,
+    });
     res.status(201).json({
       user: {
         email: newUser.email,
