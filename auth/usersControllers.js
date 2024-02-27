@@ -1,11 +1,17 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import gravatar from "gravatar";
+import path from "path";
+import { promises as fs } from "fs";
+import Jimp from "jimp";
 
 import { User } from "../auth/users.js";
 import { registerSchema, loginSchema } from "../auth/users.js";
 import HttpError from "../helpers/HttpError.js";
 
+
+const avatarDir = path.resolve("public", "avatars");
 dotenv.config();
 const { SECRET_KEY } = process.env;
 
@@ -20,6 +26,7 @@ export const register = async (req, res, next) => {
     if (user) {
       throw HttpError(409, "Email in use");
     }
+    const avatarURL = gravatar.url(email);
     const hasPassword = await bcrypt.hash(password, 10);
     const newUser = await User.create({ ...req.body, password: hasPassword });
     res.status(201).json({
@@ -81,7 +88,6 @@ export const logout = async (req, res, next) => {
   try {
     const { _id } = req.user;
     await User.findByIdAndUpdate(_id, { token: "" });
-
     res.status(204).json();
   } catch (error) {
     next(error);
@@ -92,20 +98,38 @@ export const updateUserSubscription = async (req, res, next) => {
   try {
     const { subscription } = req.body;
     const validSubscriptions = ["starter", "pro", "business"];
-
     if (!validSubscriptions.includes(subscription)) {
       throw HttpError(400, "Invalid subscription type");
     }
-
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       { subscription },
       { new: true }
     );
-
     res.status(200).json({
       email: updatedUser.email,
       subscription: updatedUser.subscription,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const { _id } = req.user;
+    if (!req.file) throw HttpError(400, "missing field avatar");
+    const { path: tmpUpload, originalname } = req.file;
+    await Jimp.read(tmpUpload).then((img) =>
+      img.resize(250, 250).write(`${tmpUpload}`)
+    );
+    const fileName = `${_id}_${originalname}`;
+    const resultUpload = path.resolve(avatarDir, fileName);
+    await fs.rename(tmpUpload, resultUpload);
+    const avatarURL = path.join("avatars", fileName);
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    res.json({
+      avatarURL,
     });
   } catch (error) {
     next(error);
