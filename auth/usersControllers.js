@@ -13,7 +13,7 @@ import sendEmail from "../helpers/sendemail.js";
 
 const avatarDir = path.resolve("public", "avatars");
 dotenv.config();
-const { SECRET_KEY } = process.env;
+const { SECRET_KEY, BASE_URL } = process.env;
 
 export const register = async (req, res, next) => {
   try {
