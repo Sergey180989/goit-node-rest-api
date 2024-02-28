@@ -3,6 +3,8 @@ import {
   register,
   login,
   logout,
+  verifyEmail,
+  resendverifyEmail,
   updateUserSubscription,
   getCurrent,
   updateAvatar,
@@ -23,6 +25,8 @@ usersRouter.patch(
   upload.single("avatar"),
   updateAvatar
 );
+usersRouter.get("/verify/:verificationToken", verifyEmail);
+usersRouter.post("/verify", resendverifyEmail);
 
 
 export default usersRouter;
