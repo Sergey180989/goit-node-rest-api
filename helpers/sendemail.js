@@ -2,24 +2,27 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-const { POSTSERVER, POSTPASS } = process.env;
+const { POSTPASS } = process.env;
 
 const nodemailerConfig = {
-     host: "smtp.ukr.net",
+  host: "smtp.meta.ua",
   port: 465,
   secure: true,
-    auth: {
-        user: POSTSERVER,
-        pass: POSTPASS
-    }
+  auth: {
+    user: "smark1809@meta.ua",
+    pass: POSTPASS,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
 };
 
 const transporter = nodemailer.createTransport(nodemailerConfig);
 
 export const sendEmail = async (data) => {
-    const email = { ...data, from: POSTSERVER };
-    await transporter.sendMail(email);
-    return true; 
-}
+  const email = { ...data, from: "smark1809@meta.ua" };
+  await transporter.sendMail(email);
+  return true;
+};
 
 export default sendEmail;

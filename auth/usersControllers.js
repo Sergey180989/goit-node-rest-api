@@ -5,17 +5,20 @@ import gravatar from "gravatar";
 import path from "path";
 import { promises as fs } from "fs";
 import Jimp from "jimp";
+import { nanoid } from "nanoid";
 
 import { User } from "../auth/users.js";
 import { registerSchema, loginSchema, emailSchema } from "../auth/users.js";
 import HttpError from "../helpers/HttpError.js";
 import sendEmail from "../helpers/sendemail.js";
 
-const avatarDir = path.resolve("public", "avatars");
+
 dotenv.config();
 const { SECRET_KEY, BASE_URL } = process.env;
+const avatarDir = path.resolve("public", "avatars");
 
 export const register = async (req, res, next) => {
+  
   try {
     const { email, password } = req.body;
     const { error } = registerSchema.validate(req.body);
